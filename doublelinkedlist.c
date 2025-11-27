@@ -1,124 +1,122 @@
-#include<stdio.h>
-#include<stdlib.h>
-struct node
-{
+#include <stdio.h>
+#include <stdlib.h>
+
+struct node {
     int data;
     struct node *prev;
     struct node *next;
 };
-struct node *head;
-struct node *createnode(int value)
-{
-  struct node *newnode=(struct node*)malloc(sizeof(struct node));
-  newnode->prev=NULL;
-  newnode->next=NULL;
-  newnode->data=value;
-  return newnode;
-};
 
-void InsertAtEnd(int value)
-{
+struct node* head = NULL;
 
-struct node *newnode = createnode(value);
-if(head==NULL)
-{
-    head=newnode;
+struct node* createnode(int val) {
+    struct node* newNode = (struct node*)malloc(sizeof(struct node));
+    newNode->data = val;
+    newNode->prev = NULL;
+    newNode->next = NULL;
+    return newNode;
 }
-else
-{
-struct node *ptr=head;
-while(ptr->next!=NULL)
-{
-    ptr=ptr->next;
+
+void create_list(int val) {
+    struct node* newNode = createnode(val);
+
+    if (head == NULL) {
+        head = newNode;
+    } else {
+        struct node* temp = head;
+        while (temp->next != NULL) {
+            temp = temp->next;
+        }
+        temp->next = newNode;
+        newNode->prev = temp;
+    }
+    printf("Node %d inserted successfully.\n", val);
 }
-ptr->next=newnode;
-newnode->prev=ptr;
-printf("node inserted %d",value);
-}
-}
-void InsertLeft(int value, int key)
-{
-    struct node *newnode=createnode(value);
-    struct node *temp=head;
-    if(head==NULL)
-    {
-        printf("list is empty");
+
+void insert_left(int target, int val) {
+    if (head == NULL) {
+        printf("List is empty. Cannot search for %d.\n", target);
         return;
     }
-    if(head->next==NULL)
-    {
-        newnode->next=head;
-        head->prev=newnode;
-        head=newnode;
+
+    struct node* temp = head;
+    while (temp != NULL && temp->data != target) {
+        temp = temp->next;
+    }
+
+    if (temp == NULL) {
+        printf("Target node %d not found.\n", target);
         return;
     }
-    else
-    {
-        while(temp->data!=key && temp!=NULL)
-        {
-            temp=temp->next;
-        }
-        if(temp->next==NULL)
-        {
-            printf("element not found");
-        }
-        else
-        {
-           newnode->next=temp;
-           newnode->prev=temp->prev;
-           temp->prev->next=newnode;
-           temp->prev=newnode;
-        }
 
+    struct node* newNode = createnode(val);
+
+    if (temp == head) {
+        newNode->next = head;
+        head->prev = newNode;
+        head = newNode;
     }
+    else {
+        newNode->prev = temp->prev;
+        newNode->next = temp;
+        temp->prev->next = newNode;
+        temp->prev = newNode;
+    }
+    printf("Inserted %d to the left of %d.\n", val, target);
 }
 
-void deleteval(int key)
-{
-    struct node *temp=head;
-    if(head==NULL)
-    {
-        printf("empty");
+void delete_val(int val) {
+    if (head == NULL) {
+        printf("List is empty. Nothing to delete.\n");
         return;
     }
-    while(temp->data!=key && temp->data!=NULL)
-    {
-        temp=temp->next;
-    }
-    if(temp->data=NULL)
-    {
-        printf("Value not found");
-    }
-    else
-    {
-        temp->prev->next=temp->next;
-        temp->next->prev=temp->prev;
-        free(temp);
-    }
-}
 
-void display()
-{
-    struct node *ptr=head;
-    if(head==NULL)
-    {
-        printf("empty list");
+    struct node* temp = head;
+    while (temp != NULL && temp->data != val) {
+        temp = temp->next;
     }
-    else
-    {
-        while(ptr->next!=NULL)
-        {
-            printf("%d<->",ptr->data);
-            ptr=ptr->next;
+
+    if (temp == NULL) {
+        printf("Node %d not found.\n", val);
+        return;
+    }
+
+    if (temp == head) {
+        head = head->next;
+        if (head != NULL) {
+            head->prev = NULL;
         }
     }
+    else {
+        temp->prev->next = temp->next;
+        if (temp->next != NULL) {
+            temp->next->prev = temp->prev;
+        }
+    }
+
+    free(temp);
+    printf("Node %d deleted successfully.\n", val);
 }
-int main()
-{
+
+void display() {
+    if (head == NULL) {
+        printf("List is empty.\n");
+        return;
+    }
+    struct node* temp = head;
+    printf("\nList contents: NULL <-> ");
+    while (temp != NULL) {
+        printf("%d <-> ", temp->data);
+        temp = temp->next;
+    }
+    printf("NULL\n");
+}
+
+int main() {
     int choice, val, target;
 
     while (1) {
-        printf("\nDOUBLY LINKED LIST MENU");
+        printf("\n\n--- DOUBLY LINKED LIST MENU ---");
         printf("\n1. Create List (Insert End)");
         printf("\n2. Insert to LEFT of a node");
         printf("\n3. Delete based on value");
@@ -131,19 +129,19 @@ int main()
             case 1:
                 printf("Enter value to insert: ");
                 scanf("%d", &val);
-                InsertAtEnd(val);
+                create_list(val);
                 break;
             case 2:
                 printf("Enter target node value: ");
-                scanf("%d", &key);
+                scanf("%d", &target);
                 printf("Enter new value to insert to the left: ");
                 scanf("%d", &val);
-                InsertLeft(val, key);
+                insert_left(target, val);
                 break;
             case 3:
                 printf("Enter value to delete: ");
                 scanf("%d", &val);
-                deleteval(val);
+                delete_val(val);
                 break;
             case 4:
                 display();
